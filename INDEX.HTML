@@ -1,0 +1,709 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus</title>
+
+  <style>
+    /* =========================
+       GENERAL WEBSITE STYLING
+       ========================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      color: white;
+
+      /* YOUR WALLHAVEN BACKGROUND */
+      background:
+        linear-gradient(
+          rgba(8, 8, 20, 0.48),
+          rgba(8, 8, 20, 0.78)
+        ),
+        url("https://w.wallhaven.cc/full/po/wallhaven-pok9zp.jpg");
+
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    /* =========================
+       NAVBAR
+       ========================= */
+
+    .navbar {
+      padding: 22px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .nav-text {
+      color: rgba(255,255,255,0.65);
+      font-size: 14px;
+    }
+
+    /* =========================
+       HERO SECTION
+       ========================= */
+
+    .hero {
+      text-align: center;
+      padding: 70px 20px 45px;
+    }
+
+    .hero h1 {
+      font-size: clamp(45px, 8vw, 90px);
+      margin-bottom: 15px;
+      letter-spacing: -3px;
+    }
+
+    .hero p {
+      color: rgba(255,255,255,0.7);
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    /* =========================
+       SEARCH BAR
+       ========================= */
+
+    .search-box {
+      display: flex;
+      max-width: 650px;
+      margin: auto;
+      padding: 7px;
+
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 18px;
+
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: white;
+      padding: 15px;
+      font-size: 16px;
+    }
+
+    .search-box input::placeholder {
+      color: rgba(255,255,255,0.55);
+    }
+
+    .search-box button {
+      border: none;
+      border-radius: 13px;
+      padding: 0 22px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* =========================
+       GAME GRID
+       ========================= */
+
+    .container {
+      width: 90%;
+      max-width: 1400px;
+      margin: auto;
+      padding-bottom: 60px;
+    }
+
+    .game-count {
+      margin-bottom: 20px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .games {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+
+    /* =========================
+       GAME CARDS
+       ========================= */
+
+    .game-card {
+      overflow: hidden;
+
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 22px;
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      transition: 0.25s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-7px);
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* GAME IMAGE AREA */
+
+    .game-art {
+      height: 180px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.25);
+    }
+
+    .game-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* GAME NAME AND DESCRIPTION */
+
+    .game-info {
+      padding: 18px;
+    }
+
+    .game-info h3 {
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .game-info p {
+      color: rgba(255,255,255,0.6);
+      min-height: 42px;
+      margin-bottom: 15px;
+    }
+
+    /* PLAY BUTTON */
+
+    .play-button {
+      display: inline-block;
+      text-decoration: none;
+      color: black;
+      background: white;
+      padding: 11px 17px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+
+    .play-button:hover {
+      background: #dcdcff;
+    }
+
+    /* NO SEARCH RESULTS */
+
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 50px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* =========================
+       GAME PLAYER
+       ========================= */
+
+    #gamePlayer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 9999;
+    }
+
+    #gameFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #000;
+    }
+
+    /* BACK BUTTON */
+
+    #closeGame {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 10000;
+
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 13px;
+
+      padding: 11px 17px;
+
+      background: rgba(20,20,25,0.75);
+      color: white;
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #closeGame:hover {
+      background: rgba(255,255,255,0.18);
+    }
+
+    /* =========================
+       RESPONSIVE DESIGN
+       ========================= */
+
+    @media (max-width: 1100px) {
+      .games {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 750px) {
+      .games {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .games {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box {
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .search-box button {
+        padding: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       NAVBAR
+       ========================= -->
+
+  <nav class="navbar">
+    <div class="logo">Nexus.</div>
+    <div class="nav-text">YOUR GAMING SPACE</div>
+  </nav>
+
+
+  <!-- =========================
+       MAIN HEADER
+       ========================= -->
+
+  <section class="hero">
+
+    <h1>Welcome to Nexus</h1>
+
+    <p>Find your next game and start playing.</p>
+
+    <div class="search-box">
+
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search games..."
+      >
+
+      <button onclick="searchGames()">
+        Search
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       GAME SECTION
+       ========================= -->
+
+  <main class="container">
+
+    <div class="game-count">
+      <span id="gameCount">4</span> games
+    </div>
+
+
+    <div class="games" id="gameGrid">
+
+
+      <!-- ==========================================
+           GAME 1: FNAF 1
+           ========================================== -->
+
+      <article class="game-card" data-name="FNAF 1">
+
+        <div class="game-art">
+
+          <img
+            src="https://static1.srcdn.com/wordpress/wp-content/uploads/2024/10/animatronics-in-fnaf2.jpg"
+            alt="FNAF 1"
+          >
+
+        </div>
+
+        <div class="game-info">
+
+          <h3>FNAF 1</h3>
+
+          <p>Five Nights at Freddy's.</p>
+
+          <button
+            class="play-button"
+            onclick="openGame('https://cdn.jsdelivr.net/gh/yzaensalih-ship-it/NEXUS@main/fnaf1.HTML')"
+          >
+            Play Game
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- ==========================================
+           GAME 2: ULTRAKILL
+           ========================================== -->
+
+      <article class="game-card" data-name="ULTRAKILL">
+
+        <div class="game-art">
+
+          <img
+            src="https://tse1.mm.bing.net/th/id/OIP.Hga5enE-SKTLOSgqHSJLQgHaDb?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+            alt="ULTRAKILL"
+          >
+
+        </div>
+
+        <div class="game-info">
+
+          <h3>ULTRAKILL</h3>
+
+          <p>Fight through the brutal world of ULTRAKILL.</p>
+
+          <button
+            class="play-button"
+            onclick="openGame('https://cdn.jsdelivr.net/gh/yzaensalih-ship-it/NEXUS@main/ultrakill.html')"
+          >
+            Play Game
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- ==========================================
+           GAME 3: COOKIE CLICKER
+           ========================================== -->
+
+      <article class="game-card" data-name="Cookie Clicker">
+
+        <div class="game-art">
+
+          <img
+            src="images/cookie-clicker.jpg"
+            alt="Cookie Clicker"
+          >
+
+        </div>
+
+        <div class="game-info">
+
+          <h3>Cookie Clicker</h3>
+
+          <p>Make as many cookies as possible.</p>
+
+          <button
+            class="play-button"
+            onclick="openGame('https://cdn.jsdelivr.net/gh/yzaensalih-ship-it/NEXUS@main/cookieclicker.html')"
+          >
+            Play Game
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- ==========================================
+           GAME 4: LITTLE ALCHEMY 2
+           ========================================== -->
+
+      <article
+        class="game-card"
+        data-name="Little Alchemy 2"
+      >
+
+        <div class="game-art">
+
+          <img
+            src="images/little-alchemy-2.jpg"
+            alt="Little Alchemy 2"
+          >
+
+        </div>
+
+        <div class="game-info">
+
+          <h3>Little Alchemy 2</h3>
+
+          <p>Combine elements and discover new things.</p>
+
+          <button
+            class="play-button"
+            onclick="openGame('https://cdn.jsdelivr.net/gh/yzaensalih-ship-it/NEXUS@main/littlealchemy2.html')"
+          >
+            Play Game
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- ==========================================
+           ADD MORE GAMES HERE
+
+           COPY THIS:
+
+           <article class="game-card" data-name="Game Name">
+
+             <div class="game-art">
+               <img
+                 src="YOUR IMAGE"
+                 alt="Game Name"
+               >
+             </div>
+
+             <div class="game-info">
+
+               <h3>Game Name</h3>
+
+               <p>Game description.</p>
+
+               <button
+                 class="play-button"
+                 onclick="openGame('YOUR JSDELIVR HTML URL')"
+               >
+                 Play Game
+               </button>
+
+             </div>
+
+           </article>
+
+           ========================================== -->
+
+
+    </div>
+
+
+    <div class="no-results" id="noResults">
+      No games found.
+    </div>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+       ========================= -->
+
+  <footer>
+    Nexus · by yazen/prov1ns
+  </footer>
+
+
+  <!-- =================================================
+       GAME PLAYER
+       ================================================= -->
+
+  <div id="gamePlayer">
+
+    <button
+      id="closeGame"
+      onclick="closeGame()"
+    >
+      ← Back to Nexus
+    </button>
+
+    <iframe
+      id="gameFrame"
+      allow="fullscreen; autoplay; gamepad"
+      allowfullscreen
+    ></iframe>
+
+  </div>
+
+
+  <!-- =========================
+       JAVASCRIPT
+       ========================= -->
+
+  <script>
+
+    /* =========================
+       SEARCH
+       ========================= */
+
+    function searchGames() {
+
+      const search = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+      const games =
+        document.querySelectorAll(".game-card");
+
+      let visible = 0;
+
+      games.forEach(game => {
+
+        const name =
+          game.dataset.name.toLowerCase();
+
+        const text =
+          game.innerText.toLowerCase();
+
+        if (
+          name.includes(search) ||
+          text.includes(search)
+        ) {
+
+          game.style.display = "";
+          visible++;
+
+        } else {
+
+          game.style.display = "none";
+
+        }
+
+      });
+
+      document
+        .getElementById("gameCount")
+        .textContent = visible;
+
+      document
+        .getElementById("noResults")
+        .style.display =
+          visible === 0
+            ? "block"
+            : "none";
+
+    }
+
+
+    /* =========================
+       ENTER TO SEARCH
+       ========================= */
+
+    document
+      .getElementById("searchInput")
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (event.key === "Enter") {
+            searchGames();
+          }
+
+        }
+      );
+
+
+    /* =========================
+       OPEN GAME INSIDE NEXUS
+       ========================= */
+
+    function openGame(url) {
+
+      const player =
+        document.getElementById("gamePlayer");
+
+      const frame =
+        document.getElementById("gameFrame");
+
+      player.style.display = "block";
+
+      frame.src = url;
+
+    }
+
+
+    /* =========================
+       CLOSE GAME
+       ========================= */
+
+    function closeGame() {
+
+      const player =
+        document.getElementById("gamePlayer");
+
+      const frame =
+        document.getElementById("gameFrame");
+
+      frame.src = "about:blank";
+
+      player.style.display = "none";
+
+    }
+
+
+    /* =========================
+       ESCAPE TO CLOSE
+       ========================= */
+
+    document.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (
+          event.key === "Escape" &&
+          document.getElementById("gamePlayer")
+            .style.display === "block"
+        ) {
+
+          closeGame();
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
+```
